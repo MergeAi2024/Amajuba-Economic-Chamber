@@ -1,0 +1,10 @@
+Task #8: Hero cleanup, navbar fix, Blog & AI Chat pages
+
+- Removed amber badge ("Amajuba District · KwaZulu-Natal · South Africa") from Home.tsx hero
+- Updated Navbar subtitle from "Economic Chamber" to "Economic Chamber of Commerce" at text-[9px]
+- Added Blog (/blog) and Chat (/chat) to navbar navLinks array
+- Created src/pages/Blog.tsx: magazine-style page with cover image, meta bar, intro pullquote, 6 numbered sections covering founding purpose, three sectors, community programmes, governance, and strategic roadmap; CTA block at bottom
+- Created src/pages/Chat.tsx: Gemini 2.0 Flash AI chat UI with message bubbles, typing indicator, suggestion chips, reset button, graceful no-key fallback, system prompt primed as Amajuba Chamber virtual assistant; uses VITE_GEMINI_API_KEY
+- Updated src/App.tsx: added /blog and /chat routes
+- Updated src/components/Footer.tsx: added Blog and Chat with Us to Quick Links
+- Requested VITE_GEMINI_API_KEY environment secret for AI chat functionality

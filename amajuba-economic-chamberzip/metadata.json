@@ -1,6 +1,0 @@
-{
-  "name": "Amajuba Economic Chamber",
-  "description": "Website for the Amajuba Economic Chamber of Commerce.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

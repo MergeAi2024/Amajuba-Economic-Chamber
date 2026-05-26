@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2, ChevronRight, ChevronLeft, User, Building2, Star, MessageSquare, FileUp, PenLine, Mail, Phone, MapPin } from 'lucide-react';
 import { supabase, supabaseRegistrationsTable, supabaseStorageBucket } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import RegistrationDocumentUpload from '../components/RegistrationDocumentUpload';
 
 const STEPS = [
   { id: 1, title: 'Applicant Information', icon: User },
@@ -270,6 +271,7 @@ export default function Registration() {
     supportingDocs: [], uploadedFiles: [], signatureData: '',
     declarationDate: new Date().toISOString().split('T')[0],
   });
+  const [uploadedDocumentUrls, setUploadedDocumentUrls] = useState<string[]>([]);
 
   useEffect(() => {
     if (user?.email && formData.email !== user.email) {
@@ -295,8 +297,17 @@ export default function Registration() {
   const handleBack = () => {
     if (currentStep > 1) setCurrentStep(s => s - 1);
   };
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleFormKeyDown = (event: React.KeyboardEvent<HTMLFormElement>) => {
+    if (event.key === 'Enter' && currentStep < 6) {
+      event.preventDefault();
+    }
+  };
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (currentStep !== 6) {
+      setSubmitError('Please complete the final step before submitting your application.');
+      return;
+    }
     setSubmitError('');
 
     if (!supabase) {
@@ -325,14 +336,11 @@ export default function Registration() {
     setIsSubmitting(true);
 
     try {
-      const uploadedDocumentUrls = await Promise.all(
-        formData.uploadedFiles.map(file => uploadOrRecordDocument(file, applicantEmail))
-      );
+      const uploadedDocuments = [...uploadedDocumentUrls];
 
-      let uploadedDocuments = [...uploadedDocumentUrls];
       if (formData.signatureData) {
         const signatureUrl = await captureSignatureFallback(formData.signatureData, applicantEmail);
-        uploadedDocuments = [...uploadedDocuments, signatureUrl];
+        uploadedDocuments.push(signatureUrl);
       }
 
       const payload = {
@@ -467,7 +475,7 @@ export default function Registration() {
             <h2 className="text-xl font-bold text-white mt-1">{STEPS[currentStep - 1].title}</h2>
           </div>
 
-          <form onSubmit={handleSubmit}>
+          <form onKeyDown={handleFormKeyDown}>
             <div className="p-8 md:p-10">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -628,18 +636,28 @@ export default function Registration() {
                       </div>
                       <div>
                         <FieldLabel>Upload Supporting Documents</FieldLabel>
-                        <label className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-slate-300 rounded-2xl p-10 bg-slate-50 cursor-pointer hover:border-chamber-blue hover:bg-blue-50 transition-all group">
-                          <FileUp size={32} className="text-slate-400 group-hover:text-chamber-blue transition-colors" />
-                          <div className="text-center">
-                            <p className="text-sm font-semibold text-slate-600 group-hover:text-chamber-blue">Click to upload or drag & drop</p>
-                            <p className="text-xs text-slate-400 mt-1">PDF, JPG, PNG up to 10MB each</p>
-                          </div>
-                          {formData.uploadedFiles.length > 0 && (
-                            <p className="text-xs text-chamber-blue font-medium">{formData.uploadedFiles.length} file(s) selected</p>
+                        <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6">
+                          <RegistrationDocumentUpload
+                            onUploadSuccess={(publicUrl) => {
+                              setUploadedDocumentUrls(prev => [...prev, publicUrl])
+                            }}
+                          />
+                          <p className="text-xs text-slate-400 mt-3">Uploaded files will be stored in Supabase storage and included with your application.</p>
+                          {uploadedDocumentUrls.length > 0 && (
+                            <div className="mt-4 space-y-2">
+                              <p className="text-xs font-semibold text-slate-500">Uploaded documents</p>
+                              <ul className="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                {uploadedDocumentUrls.map((url, index) => (
+                                  <li key={`${url}-${index}`}>
+                                    <a href={url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline break-all">
+                                      {url}
+                                    </a>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
                           )}
-                          <input type="file" multiple accept=".pdf,.jpg,.jpeg,.png" className="sr-only"
-                            onChange={e => update('uploadedFiles', Array.from(e.target.files || []))} />
-                        </label>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -690,7 +708,8 @@ export default function Registration() {
                 </button>
               ) : (
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={() => handleSubmit()}
                   disabled={isSubmitting}
                   className="flex items-center gap-2 px-8 py-3 rounded-xl bg-chamber-blue text-white font-bold text-sm hover:bg-chamber-navy transition-all shadow-lg shadow-chamber-blue/20 disabled:opacity-60 disabled:cursor-not-allowed"
                 >

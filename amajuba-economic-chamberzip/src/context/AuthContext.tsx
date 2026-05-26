@@ -84,13 +84,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error('Supabase client is not configured.');
     }
 
-    const { error, data } = await supabase.auth.signUp({ email, password });
+    const { error, data } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: import.meta.env.VITE_APP_URL,
+      },
+    });
 
-    if (error) {
+    const confirmationError = error?.message
+      ? /confirmation email|error sending confirmation|email not confirmed/i.test(error.message)
+      : false;
+
+    let nextSession = data.session ?? null;
+
+    if (confirmationError || !nextSession) {
+      const { error: signInError, data: signInData } = await supabase.auth.signInWithPassword({ email, password });
+      if (signInError) {
+        if (/confirm/i.test(signInError.message)) {
+          return { requiresConfirmation: true };
+        }
+        throw signInError;
+      }
+      nextSession = signInData.session ?? null;
+    }
+
+    if (error && !confirmationError) {
       throw error;
     }
 
-    const nextSession = data.session ?? null;
     setSession(nextSession);
     setUser(nextSession?.user
       ? {
@@ -100,7 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       : null);
 
     return {
-      requiresConfirmation: !nextSession,
+      requiresConfirmation: false,
     };
   }, []);
 

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { motion } from 'motion/react';
 import { Calendar, Clock, User, Tag, ArrowRight, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -74,6 +75,77 @@ The Amajuba Economic Chamber of Commerce exists to make that future inevitable.`
     },
   ],
 };
+
+function formatInlineText(text: string) {
+  const fragments: Array<string | ReactNode> = [];
+  const regex = /(\*\*[^*]+\*\*|==[^=]+==)/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      fragments.push(text.slice(lastIndex, match.index));
+    }
+
+    const token = match[0];
+    if (token.startsWith('**') && token.endsWith('**')) {
+      fragments.push(<strong key={match.index}>{token.slice(2, -2)}</strong>);
+    } else if (token.startsWith('==') && token.endsWith('==')) {
+      fragments.push(
+        <mark key={match.index} className="rounded-sm bg-chamber-gold/20 px-0.5 text-chamber-navy">
+          {token.slice(2, -2)}
+        </mark>,
+      );
+    } else {
+      fragments.push(token);
+    }
+
+    lastIndex = match.index + token.length;
+  }
+
+  if (lastIndex < text.length) {
+    fragments.push(text.slice(lastIndex));
+  }
+
+  return fragments;
+}
+
+function renderSectionBody(body: string) {
+  return body.split('\n\n').map((paragraph, index) => {
+    const lines = paragraph.split('\n').filter(Boolean);
+
+    if (lines.every(line => line.trim().startsWith('- '))) {
+      return (
+        <div key={index} className="space-y-2">
+          {lines.map((line, lineIndex) => {
+            const raw = line.trim().replace(/^-\s*/, '');
+            const [label, rest] = raw.split(/:\s*/, 2);
+            return (
+              <div key={lineIndex} className="flex gap-3 items-start pl-2">
+                <div className="w-2 h-2 rounded-full bg-chamber-blue mt-2 shrink-0" />
+                <p>
+                  <strong className="text-chamber-navy">{label}:</strong>{' '}
+                  {rest ? formatInlineText(rest) : null}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    return (
+      <p key={index}>
+        {lines.map((line, lineIndex) => (
+          <span key={lineIndex}>
+            {formatInlineText(line)}
+            {lineIndex < lines.length - 1 ? <br /> : null}
+          </span>
+        ))}
+      </p>
+    );
+  });
+}
 
 export default function Blog() {
   return (
@@ -158,36 +230,7 @@ export default function Blog() {
                 {section.heading}
               </h3>
               <div className="text-slate-700 leading-relaxed space-y-4">
-                {section.body.split('\n\n').map((para, j) => {
-                  if (para.startsWith('**') || para.includes('\n-')) {
-                    return (
-                      <div key={j} className="space-y-2">
-                        {para.split('\n').map((line, k) => {
-                          if (line.startsWith('**') && line.endsWith('**')) {
-                            return null;
-                          }
-                          if (line.startsWith('- **')) {
-                            const colonIdx = line.indexOf(':**');
-                            const label = line.slice(4, colonIdx);
-                            const rest = line.slice(colonIdx + 3);
-                            return (
-                              <div key={k} className="flex gap-3 items-start pl-2">
-                                <div className="w-2 h-2 rounded-full bg-chamber-blue mt-2 shrink-0" />
-                                <p><strong className="text-chamber-navy">{label}:</strong>{rest}</p>
-                              </div>
-                            );
-                          }
-                          if (line.trim()) {
-                            const bold = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-                            return <p key={k} dangerouslySetInnerHTML={{ __html: bold }} />;
-                          }
-                          return null;
-                        })}
-                      </div>
-                    );
-                  }
-                  return <p key={j}>{para}</p>;
-                })}
+                {renderSectionBody(section.body)}
               </div>
             </motion.div>
           ))}

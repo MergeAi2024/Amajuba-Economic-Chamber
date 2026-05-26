@@ -42,13 +42,13 @@ export default function Auth() {
       }
 
       const result = await signUp(email.trim(), password);
-
       if (result.requiresConfirmation) {
-        setMessage('Account created. Check your email to confirm your address, then sign in.');
+        setMessage('Account created. Please confirm your email before signing in.');
         setMode('sign-in');
-      } else {
-        navigate(from, { replace: true });
+        return;
       }
+
+      navigate(from, { replace: true });
     } catch (submitError) {
       const nextError = submitError instanceof Error ? submitError.message : 'Unable to complete the request.';
       setError(nextError);

@@ -1,6 +1,96 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Send, Bot, User, Loader2, MessageCircle, RefreshCw } from 'lucide-react';
+
+/**
+ * Renders a subset of markdown commonly produced by LLMs:
+ *   **bold**, *italic*, `code`, bullet lists (- / *), numbered lists, blank-line paragraphs.
+ * Used only for assistant bubbles; user messages are always plain text.
+ */
+function renderMarkdown(text: string): ReactNode {
+  // Split into blocks on blank lines
+  const blocks = text.split(/\n{2,}/);
+
+  return (
+    <div className="space-y-2">
+      {blocks.map((block, bi) => {
+        const lines = block.split('\n').filter(Boolean);
+
+        // Bullet list block
+        if (lines.every(l => /^[-*]\s/.test(l.trim()))) {
+          return (
+            <ul key={bi} className="space-y-1 pl-1">
+              {lines.map((line, li) => (
+                <li key={li} className="flex gap-2 items-start">
+                  <span className="mt-[5px] w-1.5 h-1.5 rounded-full bg-chamber-gold shrink-0" />
+                  <span>{inlineFormat(line.replace(/^[-*]\s+/, ''))}</span>
+                </li>
+              ))}
+            </ul>
+          );
+        }
+
+        // Numbered list block
+        if (lines.every(l => /^\d+\.\s/.test(l.trim()))) {
+          return (
+            <ol key={bi} className="space-y-1 pl-1 list-none">
+              {lines.map((line, li) => {
+                const match = line.match(/^(\d+)\.\s+(.*)/);
+                return (
+                  <li key={li} className="flex gap-2 items-start">
+                    <span className="shrink-0 font-semibold text-chamber-gold">{match?.[1]}.</span>
+                    <span>{inlineFormat(match?.[2] ?? line)}</span>
+                  </li>
+                );
+              })}
+            </ol>
+          );
+        }
+
+        // Regular paragraph — join lines with spaces
+        return (
+          <p key={bi}>
+            {lines.map((line, li) => (
+              <span key={li}>
+                {inlineFormat(line)}
+                {li < lines.length - 1 && <br />}
+              </span>
+            ))}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Handles **bold**, *italic*, and `code` within a single line. */
+function inlineFormat(text: string): ReactNode {
+  const parts: ReactNode[] = [];
+  // Matches **bold**, *italic*, `code` in order
+  const re = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parts.push(text.slice(last, m.index));
+
+    if (m[0].startsWith('**')) {
+      parts.push(<strong key={m.index} className="font-semibold text-slate-900">{m[2]}</strong>);
+    } else if (m[0].startsWith('*')) {
+      parts.push(<em key={m.index}>{m[3]}</em>);
+    } else {
+      parts.push(
+        <code key={m.index} className="px-1 py-0.5 rounded bg-slate-100 text-chamber-navy font-mono text-[0.8em]">
+          {m[4]}
+        </code>
+      );
+    }
+    last = m.index + m[0].length;
+  }
+
+  if (last < text.length) parts.push(text.slice(last));
+  return parts.length === 1 && typeof parts[0] === 'string' ? parts[0] : <>{parts}</>;
+}
 
 const TOGETHER_API_KEY = import.meta.env.VITE_TOGETHER_API_KEY as string | undefined;
 const TOGETHER_MODEL = (import.meta.env.VITE_TOGETHER_MODEL as string | undefined) ?? 'openai/gpt-oss-20b';
@@ -250,8 +340,8 @@ export default function Chat() {
                       : 'bg-white border border-slate-100 text-slate-700 shadow-sm rounded-tl-sm'
                   }`}
                 >
-                  {msg.content}
-                  <div className={`text-[10px] mt-1 ${msg.role === 'user' ? 'text-blue-300' : 'text-slate-400'}`}>
+                  {msg.role === 'assistant' ? renderMarkdown(msg.content) : msg.content}
+                  <div className={`text-[10px] mt-1.5 ${msg.role === 'user' ? 'text-blue-300' : 'text-slate-400'}`}>
                     {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>

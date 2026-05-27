@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Menu, LogOut, Home, LayoutDashboard, MessageSquare, Info, Phone, UserPlus, User } from 'lucide-react';
+import { Menu, LogOut, Home, LayoutDashboard, MessageSquare, Info, Phone, UserPlus, User, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
 
@@ -15,6 +15,7 @@ const authNavLinks = [
   { title: 'Home', path: '/', icon: Home },
   { title: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
   { title: 'Chat', path: '/chat', icon: MessageSquare },
+  { title: 'Blog', path: '/blog', icon: BookOpen },
   { title: 'About Us', path: '/about', icon: Info },
   { title: 'Contact', path: '/contact', icon: Phone },
 ];

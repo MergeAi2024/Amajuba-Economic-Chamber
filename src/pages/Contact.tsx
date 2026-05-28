@@ -1,5 +1,5 @@
-import { MapPin, Phone, Mail, Clock } from 'lucide-react';
-import { useState } from 'react';
+import { MapPin, Phone, Mail } from 'lucide-react';
+import { FormEvent, useState } from 'react';
 import { useSEO } from '../hooks/useSEO';
 
 export default function Contact() {
@@ -36,14 +36,39 @@ export default function Contact() {
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const apiBase = import.meta.env.VITE_API_URL?.trim().replace(/\/+$/, '') || '';
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Simulate form submission
-    setTimeout(() => {
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      const response = await fetch(`${apiBase}/api/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setError(data?.message || 'Unable to send your message. Please try again.');
+        return;
+      }
+
       setSubmitted(true);
       setFormData({ name: '', email: '', subject: '', message: '' });
-    }, 800);
+    } catch (submitError) {
+      console.error(submitError);
+      setError('Unable to send your message. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

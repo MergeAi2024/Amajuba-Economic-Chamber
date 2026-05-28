@@ -64,8 +64,8 @@ export default function Contact() {
               </div>
               <div>
                 <h3 className="font-bold text-chamber-navy mb-2">Email Us</h3>
-                <a href="mailto:admin@amajubaeconomicchamber.org" className="text-slate-600 text-sm hover:text-chamber-blue transition-colors break-all">
-                  admin@amajubaeconomicchamber.org
+                <a href="mailto:amajubaeconomicchamber.office@gmail.com" className="text-slate-600 text-sm hover:text-chamber-blue transition-colors break-all">
+                  amajubaeconomicchamber.office@gmail.com
                 </a>
               </div>
             </div>

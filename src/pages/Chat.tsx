@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Send, Bot, User, Loader2, MessageCircle, RefreshCw } from 'lucide-react';
 
@@ -14,7 +14,7 @@ Your role is to warmly and helpfully answer questions about:
 - Membership categories and the registration process
 - The Chamber's governance structure and leadership
 - Local Economic Development (LED) initiatives in the Amajuba District
-- Contact information: admin@amajubaeconomicchamber.org | 067 198 4100 / 068 334 1826 | Madadeni Sec 6, Red Street, Industrial Side, Unit 9, KwaZulu-Natal
+- Contact information: amajubaeconomicchamber.office@gmail.com | 067 198 4100 / 068 334 1826 | Madadeni Sec 6, Red Street, Industrial Side, Unit 9, KwaZulu-Natal
 
 Speak professionally but warmly. Keep answers concise and helpful. If asked something outside the Chamber's scope, politely redirect to what you can help with. Always represent the Chamber's values of promoting growth, prosperity, and community empowerment.`;
 
@@ -24,6 +24,63 @@ interface Message {
   content: string;
   timestamp: Date;
 }
+
+const splitTextByLine = (text: string): ReactNode[] =>
+  text.split('\n').flatMap((line, index, arr) => [
+    line,
+    ...(index < arr.length - 1 ? [<br key={`br-${index}`} />] : []),
+  ]);
+
+const parseChatContent = (content: string): ReactNode[] => {
+  const nodes: ReactNode[] = [];
+  const markdownRegex = /(`[^`]+`)|(\*\*[^*]+\*\*)|(__[^_]+__)|(\*[^*]+\*)|(_[^_]+_)/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null = null;
+
+  while ((match = markdownRegex.exec(content)) !== null) {
+    const [fullMatch] = match;
+    const codeMatch = match[1];
+    const boldDoubleMatch = match[2];
+    const boldUnderscoreMatch = match[3];
+    const italicStarMatch = match[4];
+    const italicUnderscoreMatch = match[5];
+
+    if (match.index > lastIndex) {
+      nodes.push(...splitTextByLine(content.slice(lastIndex, match.index)));
+    }
+
+    if (codeMatch) {
+      const codeText = codeMatch.slice(1, -1);
+      nodes.push(
+        <code key={`code-${match.index}`} className="font-mono text-xs bg-slate-100 rounded px-1 py-0.5">
+          {codeText}
+        </code>,
+      );
+    } else if (boldDoubleMatch || boldUnderscoreMatch) {
+      const boldText = (boldDoubleMatch || boldUnderscoreMatch)!.slice(2, -2);
+      nodes.push(
+        <strong key={`bold-${match.index}`} className="font-semibold">
+          {boldText}
+        </strong>,
+      );
+    } else if (italicStarMatch || italicUnderscoreMatch) {
+      const italicText = (italicStarMatch || italicUnderscoreMatch)!.slice(1, -1);
+      nodes.push(
+        <em key={`italic-${match.index}`} className="italic">
+          {italicText}
+        </em>,
+      );
+    }
+
+    lastIndex = match.index + fullMatch.length;
+  }
+
+  if (lastIndex < content.length) {
+    nodes.push(...splitTextByLine(content.slice(lastIndex)));
+  }
+
+  return nodes;
+};
 
 const SUGGESTIONS = [
   "What is the Chamber's mission?",
@@ -73,7 +130,7 @@ export default function Chat() {
         setMessages(prev => [...prev, {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: 'The AI assistant is not yet configured. Please add a VITE_TOGETHER_API_KEY to the environment config to enable this feature. You can contact us directly at admin@amajubaeconomicchamber.org or call 067 198 4100.',
+          content: 'The AI assistant is not yet configured. Please add a VITE_TOGETHER_API_KEY to the environment config to enable this feature. You can contact us directly at amajubaeconomicchamber.office@gmail.com or call 067 198 4100.',
           timestamp: new Date(),
         }]);
         setLoading(false);
@@ -123,7 +180,7 @@ export default function Chat() {
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'I encountered an error connecting to the AI service. Please try again shortly, or contact us directly at admin@amajubaeconomicchamber.org.',
+        content: 'I encountered an error connecting to the AI service. Please try again shortly, or contact us directly at amajubaeconomicchamber.office@gmail.com.',
         timestamp: new Date(),
       }]);
     } finally {
@@ -250,7 +307,7 @@ export default function Chat() {
                       : 'bg-white border border-slate-100 text-slate-700 shadow-sm rounded-tl-sm'
                   }`}
                 >
-                  {msg.content}
+                  {msg.role === 'assistant' ? parseChatContent(msg.content) : msg.content}
                   <div className={`text-[10px] mt-1 ${msg.role === 'user' ? 'text-blue-300' : 'text-slate-400'}`}>
                     {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>

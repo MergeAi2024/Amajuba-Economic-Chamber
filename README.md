@@ -1,20 +1,49 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+  <img width="240" height="240" alt="Amajuba Economic Chamber Logo" src="/logo.jpg" />
 </div>
 
-# Run and deploy your AI Studio app
+# Amajuba Economic Chamber — Web App
 
-This contains everything you need to run your app locally.
+This repository contains the front-end for the Amajuba Economic Chamber of Commerce website and member portal.
 
-View your app in AI Studio: https://ai.studio/apps/4805a3d2-aa22-49d4-9c93-b774b8b326d4
+Key details
+- **Registration number:** 2026 / 354235 / 08
+- **Location:** Amajuba District, KwaZulu-Natal, South Africa
+- **Contact:** amajubaeconomicchamber.office@gmail.com | 067 198 4100 / 068 334 1826
 
-## Run Locally
+Running locally
 
-**Prerequisites:**  Node.js
+Prerequisites:
+- Node.js (LTS recommended)
 
+1. Install dependencies
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm install
+```
+
+2. Create a `.env.local` file in the repository root and provide the required variables (see `.env.example`):
+
+- `VITE_TOGETHER_API_KEY` — (optional) Together AI / LLM API key for chat
+- `VITE_TOGETHER_MODEL` — model identifier (defaults to `openai/gpt-oss-20b`)
+- `VITE_SUPABASE_URL` — your Supabase project URL
+- `VITE_SUPABASE_ANON_KEY` — your Supabase anon/public key
+- `VITE_SUPABASE_REGISTRATIONS_TABLE` — table name (default: `registrations`)
+- `VITE_SUPABASE_STORAGE_BUCKET` — storage bucket (default: `Registrations`)
+- `VITE_APP_URL` — application URL used for redirects (e.g. `http://localhost:5000`)
+
+3. Start the dev server
+
+```bash
+npm run dev
+```
+
+Logo guidance
+
+- Place the site logo at `/public/logo.jpg`. The app falls back to an inline icon if the image is missing.
+- Use a square PNG or JPG (recommended 512x512) with a transparent or white background.
+
+License & notes
+
+This project is maintained by the Amajuba Economic Chamber. The canonical registration number is shown above and should not be changed in app copy or footer.
+

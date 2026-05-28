@@ -397,9 +397,9 @@ export default function Registration() {
           </p>
           <div className="bg-slate-50 rounded-2xl p-6 text-left space-y-3">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Contact the Chamber</p>
-            <div className="flex items-center gap-3 text-sm text-slate-600">
+              <div className="flex items-center gap-3 text-sm text-slate-600"> 
               <Mail size={16} className="text-chamber-blue shrink-0" />
-              <span>admin@amajubaeconomicchamber.org</span>
+              <span>amajubaeconomicchamber.office@gmail.com</span>
             </div>
             <div className="flex items-center gap-3 text-sm text-slate-600">
               <Phone size={16} className="text-chamber-blue shrink-0" />
@@ -560,7 +560,7 @@ export default function Registration() {
                       </div>
                       <div>
                         <FieldLabel>Registration Number</FieldLabel>
-                        <input type="text" placeholder="e.g. 2026/123456/07" className={inputClass}
+                        <input type="text" placeholder="e.g. 2026 / 354235 / 08" className={inputClass}
                           value={formData.businessRegNumber} onChange={e => update('businessRegNumber', e.target.value)} />
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -642,21 +642,7 @@ export default function Registration() {
                               setUploadedDocumentUrls(prev => [...prev, publicUrl])
                             }}
                           />
-                          <p className="text-xs text-slate-400 mt-3">Uploaded files will be stored in Supabase storage and included with your application.</p>
-                          {uploadedDocumentUrls.length > 0 && (
-                            <div className="mt-4 space-y-2">
-                              <p className="text-xs font-semibold text-slate-500">Uploaded documents</p>
-                              <ul className="list-disc list-inside text-sm text-slate-600 space-y-1">
-                                {uploadedDocumentUrls.map((url, index) => (
-                                  <li key={`${url}-${index}`}>
-                                    <a href={url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline break-all">
-                                      {url}
-                                    </a>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
+                          <p className="text-xs text-slate-400 mt-3">After selecting a file, click the <strong>Upload</strong> button to add it to your application.</p>
                         </div>
                       </div>
                     </div>

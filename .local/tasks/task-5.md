@@ -27,7 +27,7 @@ The registration form needs to be rebuilt as a proper multi-step wizard matching
 ## Steps
 1. **Rebuild Registration page as wizard** — Replace the existing Registration.tsx with a 6-step wizard component. Each step renders its own fields. Use a step indicator at the top showing step number, title, and completion state. Animate the transition between steps.
 2. **Signature field on step 6** — Implement a simple canvas-based drawn signature (using an HTML canvas element with mouse/touch events) or a styled text-input fallback. No external library needed.
-3. **Success screen** — After submission, show a branded confirmation screen with the chamber name, a checkmark icon, and a note to email admin@amajubaeconomicchamber.org.
+3. **Success screen** — After submission, show a branded confirmation screen with the chamber name, a checkmark icon, and a note to email amajubaeconomicchamber.office@gmail.com.
 4. **Hero section background** — Replace the near-invisible Unsplash overlay with a proper full-opacity background image (a South African business/cityscape photo from Unsplash with a navy/dark gradient overlay). Text should be white on the hero. Add a stat strip or tagline beneath the hero for added depth.
 
 ## Relevant files

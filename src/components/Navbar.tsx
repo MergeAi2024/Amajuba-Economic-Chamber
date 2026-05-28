@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Menu, LogOut, Home, LayoutDashboard, MessageSquare, Info, Phone, UserPlus, User } from 'lucide-react';
+import { Menu, LogOut, Home, LayoutDashboard, MessageSquare, Info, Phone, UserPlus, User, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
 
@@ -13,8 +13,8 @@ const publicNavLinks = [
 
 const authNavLinks = [
   { title: 'Home', path: '/', icon: Home },
+  { title: 'Blog', path: '/blog', icon: BookOpen },
   { title: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-  { title: 'Chat', path: '/chat', icon: MessageSquare },
   { title: 'About Us', path: '/about', icon: Info },
   { title: 'Contact', path: '/contact', icon: Phone },
 ];
@@ -54,9 +54,9 @@ export default function Navbar() {
               </div>
             </div>
             <div className="flex flex-col leading-none">
-              <span className="font-bold text-chamber-navy text-lg uppercase">AMAJUBA</span>
+              <span className="font-bold text-chamber-navy text-lg uppercase">AMAJUBA ECONOMIC</span>
               <span className="font-medium text-[9px] text-slate-500 tracking-widest uppercase mt-1">
-                Economic Chamber of Commerce
+                Chamber of Commerce
               </span>
             </div>
           </Link>

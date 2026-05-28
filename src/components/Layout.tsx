@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import FloatingChatButton from './FloatingChatButton';
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -13,6 +14,7 @@ export default function Layout() {
         <Outlet />
       </main>
       {!isChat && <Footer />}
+      {!isChat && <FloatingChatButton />}
     </div>
   );
 }

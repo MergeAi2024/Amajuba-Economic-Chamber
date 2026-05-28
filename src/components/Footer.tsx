@@ -42,7 +42,7 @@ export default function Footer() {
             </p>
             <div className="inline-block mt-auto">
               <span className="px-3 py-1 bg-white/10 rounded-full text-xs text-chamber-lightgold uppercase tracking-wider font-semibold">
-                Reg No: 2026/118117/08
+                Reg No: 2026 / 354235 / 08
               </span>
             </div>
           </div>
@@ -92,8 +92,8 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-4">
                 <Mail className="text-chamber-lightgold shrink-0" size={18} />
-                <a href="mailto:admin@amajubaeconomicchamber.org" className="text-slate-300 hover:text-white transition-colors text-sm">
-                  admin@amajubaeconomicchamber.org
+                <a href="mailto:amajubaeconomicchamber.office@gmail.com" className="text-slate-300 hover:text-white transition-colors text-sm">
+                  amajubaeconomicchamber.office@gmail.com
                 </a>
               </li>
             </ul>

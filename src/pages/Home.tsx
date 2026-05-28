@@ -26,7 +26,7 @@ export default function Home() {
 
   const stats = [
     { icon: <Users size={22} />, value: '500+', label: 'Members' },
-    { icon: <Building size={22} />, value: '6', label: 'Districts Covered' },
+    { icon: <Building size={22} />, value: '6', label: 'Local Municipalities' },
     { icon: <TrendingUp size={22} />, value: '3', label: 'Economic Sectors' },
   ];
 
@@ -65,16 +65,6 @@ export default function Home() {
 
               {/* Left column — text */}
               <div>
-                {/* Location badge */}
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-chamber-gold/40 bg-chamber-gold/10 text-chamber-gold text-xs font-semibold uppercase tracking-widest mb-8"
-                >
-                  <MapPin size={11} />
-                  Amajuba District · KwaZulu-Natal
-                </motion.div>
 
                 <motion.h1
                   initial={{ opacity: 0, y: 30 }}

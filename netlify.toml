@@ -3,7 +3,16 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  environment = { NODE_VERSION = "20" }
+  environment = { NODE_VERSION = "20", SECRETS_SCAN_OMIT_KEYS = "EMAIL_USER,EMAIL_PASS" }
+
+[functions]
+  directory = "netlify/functions"
+
+# Redirect API routes to Netlify Functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
 
 # Redirect all non-file requests to index.html for client-side routing
 [[redirects]]
@@ -41,3 +50,8 @@
 # - VITE_SUPABASE_URL
 # - VITE_SUPABASE_ANON_KEY
 # - VITE_SUPABASE_STORAGE_BUCKET
+# - EMAIL_USER
+# - EMAIL_PASS
+# - EMAIL_TO
+# - TOGETHER_API_KEY
+# - TOGETHER_MODEL (optional)

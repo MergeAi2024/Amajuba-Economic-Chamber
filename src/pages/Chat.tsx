@@ -2,9 +2,6 @@ import { useState, useRef, useEffect, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Send, Bot, User, Loader2, MessageCircle, RefreshCw } from 'lucide-react';
 
-const TOGETHER_API_KEY = import.meta.env.VITE_TOGETHER_API_KEY as string | undefined;
-const TOGETHER_MODEL = (import.meta.env.VITE_TOGETHER_MODEL as string | undefined) ?? 'openai/gpt-oss-20b';
-
 const SYSTEM_PROMPT = `You are the official virtual assistant for the Amajuba Economic Chamber of Commerce, based in the Amajuba District of KwaZulu-Natal, South Africa. Registration number: 2026 / 354235 / 08.
 
 Your role is to warmly and helpfully answer questions about:
@@ -125,28 +122,13 @@ export default function Chat() {
     setInput('');
     setLoading(true);
 
-    if (!TOGETHER_API_KEY) {
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: 'The AI assistant is not yet configured. Please add a VITE_TOGETHER_API_KEY to the environment config to enable this feature. You can contact us directly at amajubaeconomicchamber.office@gmail.com or call 067 198 4100.',
-          timestamp: new Date(),
-        }]);
-        setLoading(false);
-      }, 600);
-      return;
-    }
-
     try {
-      const response = await fetch('https://api.together.xyz/v1/chat/completions', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${TOGETHER_API_KEY}`,
         },
         body: JSON.stringify({
-          model: TOGETHER_MODEL,
           messages: [
             { role: 'system', content: SYSTEM_PROMPT },
             ...conversation
@@ -156,15 +138,13 @@ export default function Chat() {
                 content: m.content,
               })),
           ],
-          temperature: 0.7,
-          max_tokens: 500,
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data?.error?.message ?? 'Together AI request failed');
+        throw new Error(data?.message || 'AI service request failed');
       }
 
       const message = data?.choices?.[0]?.message;
@@ -228,12 +208,6 @@ export default function Chat() {
 
           {/* Right controls */}
           <div className="flex items-center gap-2 shrink-0">
-            {!TOGETHER_API_KEY && (
-              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 border border-amber-200 rounded-full text-amber-700 text-[10px] font-semibold">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                AI not configured
-              </span>
-            )}
             <button
               onClick={resetChat}
               title="New conversation"
@@ -243,16 +217,6 @@ export default function Chat() {
             </button>
           </div>
         </div>
-
-        {/* Mobile-only: AI not configured warning */}
-        {!TOGETHER_API_KEY && (
-          <div className="sm:hidden px-3 pb-2">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-xs font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
-              AI not yet configured — responses will be limited
-            </div>
-          </div>
-        )}
       </div>
 
       {/* ── Scrollable messages area ── */}

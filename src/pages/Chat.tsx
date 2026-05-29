@@ -99,6 +99,7 @@ export default function Chat() {
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const apiBase = import.meta.env.VITE_API_URL?.trim().replace(/\/+$/, '') || '';
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -123,7 +124,7 @@ export default function Chat() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch(`${apiBase}/api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

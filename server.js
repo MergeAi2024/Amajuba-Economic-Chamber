@@ -83,6 +83,47 @@ app.post('/api/contact', async (req, res) => {
   }
 });
 
+app.post('/api/chat', async (req, res) => {
+  const TOGETHER_API_KEY = process.env.TOGETHER_API_KEY;
+  const TOGETHER_MODEL = process.env.TOGETHER_MODEL || 'openai/gpt-oss-20b';
+
+  if (!TOGETHER_API_KEY) {
+    return res.status(500).json({ message: 'AI service is not configured.' });
+  }
+
+  try {
+    const { messages } = req.body || {};
+
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ message: 'Invalid request payload.' });
+    }
+
+    const togetherResponse = await fetch('https://api.together.xyz/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${TOGETHER_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: TOGETHER_MODEL,
+        messages,
+        temperature: 0.7,
+        max_tokens: 500,
+      }),
+    });
+
+    const data = await togetherResponse.json();
+    if (!togetherResponse.ok) {
+      return res.status(502).json({ message: data?.error?.message || 'Together AI request failed.' });
+    }
+
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error('Chat endpoint error:', error);
+    return res.status(500).json({ message: 'Unable to reach the AI service.' });
+  }
+});
+
 app.post('/api/update-profile', async (req, res) => {
   try {
     const auth = req.headers.authorization || req.headers.Authorization || '';

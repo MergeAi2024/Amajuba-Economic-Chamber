@@ -190,11 +190,17 @@ export default function Contact() {
                     ></textarea>
                   </div>
 
+                  {error && (
+                    <div className="rounded-2xl border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm">
+                      {error}
+                    </div>
+                  )}
                   <button 
                     type="submit"
-                    className="w-full md:w-auto px-8 py-3 bg-chamber-navy text-white rounded-full font-semibold hover:bg-slate-800 transition-colors shadow-lg shadow-chamber-navy/20"
+                    disabled={isSubmitting}
+                    className="w-full md:w-auto px-8 py-3 bg-chamber-navy text-white rounded-full font-semibold hover:bg-slate-800 transition-colors shadow-lg shadow-chamber-navy/20 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Send Message
+                    {isSubmitting ? 'Sending…' : 'Send Message'}
                   </button>
                 </form>
               )}

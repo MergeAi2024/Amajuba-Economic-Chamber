@@ -186,7 +186,7 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex flex-col overflow-hidden bg-slate-50 min-h-0">
+    <div className="flex flex-col overflow-hidden bg-slate-50 min-h-screen">
 
       {/* ── Header ── */}
       <div className="shrink-0 bg-white border-b border-slate-100 shadow-sm">

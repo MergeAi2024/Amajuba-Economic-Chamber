@@ -108,6 +108,17 @@ export default function Footer() {
           <p className="text-slate-400 text-xs">
             Promoting Growth & Prosperity
           </p>
+          <p className="text-slate-400 text-xs">
+            Developed by{' '}
+            <a
+              href="https://computeintelligence.co.za"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-chamber-lightgold hover:text-white transition-colors"
+            >
+              Compute Intelligence
+            </a>
+          </p>
         </div>
       </div>
     </footer>
